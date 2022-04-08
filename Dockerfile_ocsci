@@ -1,4 +1,5 @@
-FROM quay.io/kesavanvt/ocsci-osd:base-latest
+ARG BASE_IMAGE_TAG=base-latest
+FROM quay.io/rhceph-dev/ocsci-osd:${BASE_IMAGE_TAG}
 
 # Environment variables containing various file locations required by
 # scripts.
@@ -9,10 +10,12 @@ ADD https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-c
 RUN cd /usr/local/bin && \
     tar -xvf /openshift-client-linux.tar.gz oc
 
-COPY bin/test-ocs.sh /usr/local/bin/
+ARG ADDON_TEST_FILE=test-ocs.sh
+COPY bin/${ADDON_TEST_FILE} /usr/local/bin/
 RUN chmod 755 /usr/local/bin/*.sh
 
 # Run the test suite script when the container is created.
-ENTRYPOINT [ "/usr/local/bin/test-ocs.sh" ]
+ENV ENTRYPOINT_FILE="/usr/local/bin/${ADDON_TEST_FILE}"
+ENTRYPOINT exec "$ENTRYPOINT_FILE"
 
 # vim: ft=dockerfile

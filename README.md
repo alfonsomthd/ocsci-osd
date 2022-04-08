@@ -17,12 +17,12 @@ Three different containers are built using this repository:
 - **ocsci-osd-base**: This container is a staged build that contains the base
   image with ocs-ci installed with all its dependencies. It is built using
   [Dockerfile_base](Dockerfile_base). The images are available at
-  https://quay.io/mkarnikredhat/ocsci-osd:base-latest
+  https://quay.io/rhceph-dev/ocsci-osd:base-latest
 - **ocsci-osd**: This container contains the actual ocs-ci payload. It installs
   any dependencies that are not part of the "OS" and its entry point script
   runs the test suite. It is built using [Dockerfile_ocsci](Dockerfile_ocsci)
   and the images are available at
-  https://quay.io/mkarnikredhat/ocsci-osd:latest
+  https://quay.io/rhceph-dev/ocsci-osd:latest
 - **osdtest**: This is a container used to test various scripts in the osde2e
   environment before building the ocsci-osd containers with those changes. It
   is built using [Dockerfile_osdtest](Dockerfile_osdtest) and the images are
@@ -35,3 +35,31 @@ Three different containers are built using this repository:
 [ocs-operator]:https://github.com/openshift/ocs-operator
 [osde2e]:https://github.com/openshift/osde2e
 [test harness repository]:https://github.com/brainfunked/ocs-operator-test-harness
+
+## Building images
+
+### OCS-Converged
+
+* Build the base image:
+```
+docker build -t quay.io/rhceph-dev/ocsci-osd:base-latest -f Dockerfile_base .
+```
+
+* Build the addon test harness image:
+```
+docker build -t quay.io/rhceph-dev/ocsci-osd:latest -f Dockerfile_ocsci .
+```
+
+### OCS-Consumer
+
+* Build the base image:
+```
+docker build -t quay.io/rhceph-dev/ocsci-osd:base-consumer-addon -f Dockerfile_base .
+```
+
+* Build the addon test harness image:
+```
+docker build -t quay.io/rhceph-dev/ocsci-osd:consumer-addon -f Dockerfile_ocsci . \
+--build-arg BASE_IMAGE_TAG=base-consumer-addon \
+--build-arg ADDON_TEST_FILE=test-ocs-consumer.sh
+```
